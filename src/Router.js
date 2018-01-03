@@ -3,45 +3,40 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
-const first = {
-  template: '<div>first</div>'
-}
-const second = {
-  template: '<div>second</div>'
-}
-const home = {
-  template: '<div>Home</div>'
-}
-
 const router = new VueRouter({
   mode: 'history',
   base: __dirname,
   routes: [
     {
-      path: '/',
-      component: home
+      path: '/'
     },
     {
-      path: '/first',
-      component: first
+      path: '/params/:aaa/:bbb'//冒号绑定数据
     },
     {
-      path: '/second',
-      component: second
+      path: '/params-regex/:id(\\d+)'//正则表达式，数字开头的所有。
     }
   ]
 })
 
 new Vue({
   router,
-  template: `<div id="r">
-              <h1>导航</h1>
+  template: `<div>
+              <h1>good morning</h1>
               <ul>
-                <li><router-link to="/">home</router-link></li>
-                <li><router-link to="/first">first</router-link></li>
-                <li><router-link to="/second">second</router-link></li>
+                <li>
+                  <router-link to="/">HOME</router-link>
+                </li>
+                <li>
+                  <router-link to="params/111/222">params</router-link>
+                </li>
+                <li>
+                  <router-link to="params-regex/111">params-regex</router-link>
+                </li>
               </ul>
-              <h1>显示区域</h1>
-              <router-view></router-view>
+              <p>show</p>
+              <p>aaa：{{$route.params.aaa}}</p>
+              <p>bbb：{{$route.params.bbb}}</p>
+              <p>id：{{$route.params.id}}</p>
             </div>`
 }).$mount('#app')
