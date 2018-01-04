@@ -315,16 +315,88 @@ __dirname在node js 下，指的是当前的本地路径。</br>
                       <router-link to="/">HOME</router-link>
                     </li>
                     <li>
-                      <router-link to="params/111/222">params</router-link>
+                      <router-link to="/params/111/222">params</router-link>
                     </li>
                     <li>
-                      <router-link to="params-regex/111">params-regex</router-link>
+                      <router-link to="/params-regex/111">params-regex</router-link>
                     </li>
                   </ul>
                   <p>show</p>
                   <p>aaa：{{$route.params.aaa}}</p>
                   <p>bbb：{{$route.params.bbb}}</p>
                   <p>id：{{$route.params.id}}</p>
+                </div>`
+    }).$mount('#app')
+```
+
+## query和params的区别
+params需要在路由表做绑定设置，<br/>
+query直接在:to="{path: '', query: {}}"
+```
+    import Vue from 'vue'
+    import VueRouter from 'vue-router'
+    
+    Vue.use(VueRouter)
+    
+    const Home = {
+      template: `<div>
+                    <h2>Home</h2>
+                </div>`
+    }
+    const users = {
+      template: `<div>
+                    <h2>Users</h2>
+                    <router-view></router-view>
+                </div>`
+    }
+    const user = {
+      template: `<div>
+                    <h2>User</h2>
+                    {{ $route.params.username}} -
+                    {{ $route.query.id}}
+                </div>`
+    }
+    const router = new VueRouter({
+      mode: 'history',
+      base: __dirname,
+      routes: [
+        {
+          path: '/',
+          name: 'Home',
+          component: Home
+        },
+        {
+          path: '/users',
+          component: users,
+          children: [
+            {
+              path: ':username',
+              name: 'user',
+              component: user
+            }
+          ]
+        }
+      ]
+    })
+    
+    new Vue({
+      router,
+      template: `<div>
+                  <h1>导航</h1>
+                  <ul>
+                    <li>
+                      <router-link to="/">HOME</router-link>
+                    </li>
+                    <li>
+                      <router-link to="/first">first</router-link>
+                    </li>
+                      <ol>
+                        <li>
+                            <router-link :to="{path: '/users/wos', query: {id: '123'}}">ABS</router-link>
+                        </li>
+                      </ol>
+                  </ul>
+                  <router-view></router-view>
                 </div>`
     }).$mount('#app')
 ```
