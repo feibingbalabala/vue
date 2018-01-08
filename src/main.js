@@ -2,6 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import Router from './Router'
+// import transition from './transition'
 // import App from './App'
 // import router from './router'
 
@@ -10,7 +11,6 @@ import Router from './Router'
 // /* eslint-disable no-new */
 // new Vue({
 //   el: '#app',
-//   router,
-//   template: '<App/>',
-//   components: { App }
+//   render: xx => xx(transition)
 // })
+

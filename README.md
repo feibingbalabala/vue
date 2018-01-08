@@ -331,7 +331,9 @@ __dirname在node js 下，指的是当前的本地路径。</br>
 
 ## query和params的区别
 params需要在路由表做绑定设置，<br/>
-query直接在:to="{path: '', query: {}}"
+query直接在:to="{path: '', query: {}}"<br/>
+设置 append 属性后，则在当前（相对）路径前添加基路径。例如，我们从 /a 导航到一个相对路径 b，如果没有配置 append，则路径为 /b，如果配了，则为 /a/b.<br/>
+exact: "是否激活" 默认类名的依据是 inclusive match （全包含匹配）。 举个例子，如果当前的路径是 /a 开头的，那么 <router-link to="/a"> 也会被设置 CSS 类名。
 ```
     import Vue from 'vue'
     import VueRouter from 'vue-router'
@@ -399,4 +401,308 @@ query直接在:to="{path: '', query: {}}"
                   <router-view></router-view>
                 </div>`
     }).$mount('#app')
+```
+## 路由重定向
+路由重定向可以有三种方式。
+```
+    import Vue from 'vue'
+    import VueRouter from 'vue-router'
+    
+    Vue.use(VueRouter)
+    
+    const first = {
+      template: '<div>first</div>'
+    }
+    const second = {
+      template: '<div>second</div>'
+    }
+    
+    const firstFirst = {
+      template: '<div>firstFirst<P>id：{{$route.params.id}}</P></div>'
+    }
+    const firstSecond = {
+      template: '<div>firstSecond</div>'
+    }
+    const home = {
+      template: '<div>Home</div>'
+    }
+    const firstChild = {
+      template: '<div><h2>firstChild</h2><router-view></router-view></div>'
+    }
+    const router = new VueRouter({
+      mode: 'history',
+      base: __dirname,
+      routes: [
+        {
+          path: '/',
+          name: 'Home',
+          component: home
+        },
+        {
+          path: '/first',
+          // name: 'Home-first', // 由于first有子路由，所以这个name并不会生效，只能在下面设置
+          component: firstChild,
+          children: [
+            {path: '/',name: 'Home-first', component: first},
+            {path: 'first', name: 'Home-first-first', component: firstFirst}, 
+            {path: 'second', name: 'Home-first-second', component: firstSecond},
+            {path: 'third', redirect: 'first'} // 1、路由重定向
+          ]
+        },
+        {
+          path: '/second',
+          name: 'Home-second',
+          component: second
+        },
+        // 2、带参数的路由重定向start
+        {
+          path: '/four/:id',
+          name: 'Home-four',
+          component: firstFirst
+        },
+        {
+          path: '/five/:id',
+          redirect: '/four/:id'
+        },
+        // 2、带参数的路由重定向end
+        // 3、用函数的方式进行重定向
+        {
+          path: '/six/:id',
+          redirect: item => {
+            const {hash, params, query} = item;
+            console.log(item);
+            if (params.id == '001') {
+              return '/second'
+            }
+          }
+        }
+      ]
+    })
+    
+    new Vue({
+      router,
+      template: `<div id="r">
+                  <h1>导航</h1>
+                  <P>{{ $route.name }}</P>
+                  <ol>
+                    <li><router-link to="/">home</router-link></li>
+                    <li><router-link to="/first">first</router-link></li>
+                    <li>
+                      <ol>
+                        <li><router-link :to="{name: 'Home-first-first', params: {id: 123}}">first</router-link></li> 
+                        <li><router-link to="/first/second">second</router-link></li>
+                        <li><router-link to="third">third</router-link></li>
+                      </ol>
+                    </li>
+                    <li><router-link to="/second">second</router-link></li>
+                    <li><router-link to="/four/890">four</router-link></li>
+                    <li><router-link to="/five/250">five</router-link></li>
+                    <li><router-link to="/six/001">six</router-link></li>
+                  </ol>
+                  <h1>显示区域</h1>
+                  <router-view></router-view>
+                </div>`
+    }).$mount('#app')
+```
+## 别名alias
+我的理解就是不同的url映射同一个模版
+```
+    import Vue from 'vue'
+    import VueRouter from 'vue-router'
+    
+    Vue.use(VueRouter)
+    
+    const first = {
+      template: '<div>first</div>'
+    }
+    const second = {
+      template: '<div>second</div>'
+    }
+    
+    const firstFirst = {
+      template: '<div>firstFirst<P>id：{{$route.params.id}}</P></div>'
+    }
+    const firstSecond = {
+      template: '<div>firstSecond</div>'
+    }
+    const home = {
+      template: '<div>Home</div>'
+    }
+    const firstChild = {
+      template: '<div><h2>firstChild</h2><router-view></router-view></div>'
+    }
+    const router = new VueRouter({
+      mode: 'history',
+      base: __dirname,
+      routes: [
+        {
+          path: '/',
+          name: 'Home',
+          component: home
+        },
+        {
+          path: '/first',
+          // name: 'Home-first', // 由于first有子路由，所以这个name并不会生效，只能在下面设置
+          component: firstChild,
+          children: [
+            {path: '/',name: 'Home-first', component: first},
+            {path: 'first', name: 'Home-first-first', component: firstFirst}, 
+            {path: 'second', name: 'Home-first-second', component: firstSecond},
+            {path: 'third', redirect: 'first'} // 1、路由重定向
+          ]
+        },
+        {
+          path: '/second',
+          name: 'Home-second',
+          component: second,
+          alias: '/thired'
+        },
+      ]
+    })
+    
+    new Vue({
+      router,
+      template: `<div id="r">
+                  <h1>导航</h1>
+                  <P>{{ $route.name }}</P>
+                  <ol>
+                    <li><router-link to="/">home</router-link></li>
+                    <li><router-link to="/first">first</router-link></li>
+                    <li>
+                      <ol>
+                        <li><router-link :to="{name: 'Home-first-first', params: {id: 123}}">first</router-link></li> 
+                        <li><router-link to="/first/second">second</router-link></li>
+                        <li><router-link to="third">third</router-link></li>
+                      </ol>
+                    </li>
+                    <li><router-link to="/second">second</router-link></li>
+                    <li><router-link to="/thired">thired</router-link></li>
+                  </ol>
+                  <h1>显示区域</h1>
+                  <router-view></router-view>
+                </div>`
+    }).$mount('#app')
+```
+## 路由动画
+
+### 页面动画
+新建：src/transition.vue
+```
+    <template>
+      <div>
+        <button @click="show = !show">show/hide text</button>
+        <transition name="fade">
+          <p v-show="show">this is an animation</p>
+        </transition>
+      </div>
+    </template>
+    <script>
+      export default {
+        name: 'demo',
+        data() {
+          return {
+            show: true
+          }
+        }
+      }
+    </script>
+    <style scoped>
+    /* 作用域：scoped 
+       只作用域当前的vue文件，如果去掉则作用域全局作用域
+    */
+    .fade-enter-active, .fade-leave-active {
+      transition: opacity 0.5s;
+    }
+    .fade-enter, .fade-leave-active {
+      opacity: 0;
+    }
+    </style>
+```
+src/main.js
+```
+import Vue from 'vue'
+import transition from './transition'
+
+new Vue({
+   el: '#app',
+   render: xx => xx(transition)
+})
+```
+### 路由动画
+src/Router.js
+```
+    import Vue from 'vue'
+    import VueRouter from 'vue-router'
+    
+    Vue.use(VueRouter)
+    
+    const home = {
+      template: `
+        <div>
+          <h2>home</h2>
+          <p>This is home</p>
+        </div>
+      `
+    }
+    
+    const parent = {
+      template: `
+        <div>
+          <h2>parent</h2>
+          <p>This is parent</p>
+        </div>
+      `
+    }
+    
+    const router = new VueRouter({
+      mode: 'history',
+      base: __dirname,
+      routes: [
+        {
+          path: '/', 
+          component: home
+        },
+        {
+          path: '/parent',
+          component: parent
+        }
+      ]
+    })
+    
+    new Vue({
+      router,
+      template: `
+        <div id="app">
+          <h1>This is transition</h1>
+          <ul>
+            <li>
+              <router-link to="/">home</router-link>
+            </li>
+            <li>
+              <router-link to="/parent">parent</router-link>
+            </li>
+          </ul>
+          // mode：动画模式，有两个参数out-in：我先出去你在进来，in-out：我先进来你再出去
+          <transition name="fade" mode="in-out">
+            <router-view></router-view>
+          </transition>
+        </div>
+      `
+    }).$mount("#app")
+```
+main.js
+```
+import Vue from 'vue'
+import Router from './Router'
+```
+入口文件index.html
+```
+    <style>
+      .fade-enter-active, .fade-leave-active {
+        transition: opacity 0.5s;
+      }
+      .fade-enter, .fade-leave-active {
+        opacity: 0;
+      }
+    </style>
 ```

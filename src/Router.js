@@ -3,80 +3,56 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
-const Home = {
-  template: `<div>
-                <h2>Home</h2>
-            </div>`
+const home = {
+  template: `
+    <div>
+      <h2>home</h2>
+      <p>This is home</p>
+    </div>
+  `
 }
-const about = {
-  template: `<div>
-                <h2>about</h2>
-            </div>`
+
+const parent = {
+  template: `
+    <div>
+      <h2>parent</h2>
+      <p>This is parent</p>
+    </div>
+  `
 }
-const users = {
-  template: `<div>
-                <h2>Users</h2>
-                <router-view></router-view>
-            </div>`
-}
-const user = {
-  template: `<div>
-                <h2>User</h2>
-                {{ $route.params.username}} -
-                {{ $route.query.id}}
-            </div>`
-}
+
 const router = new VueRouter({
   mode: 'history',
   base: __dirname,
   routes: [
     {
-      path: '/',
-      name: 'Home',
-      component: Home
+      path: '/', 
+      component: home
     },
     {
-      path: '/about',
-      name: 'about',
-      component: about
-    },
-    {
-      path: '/users',
-      component: users,
-      children: [
-        {
-          path: ':username',
-          name: 'user',
-          component: user
-        }
-      ]
+      path: '/parent',
+      component: parent
     }
   ]
 })
 
 new Vue({
   router,
-  template: `<div>
-              <h1>导航</h1>
-              <ul>
-                <li>
-                  <router-link to="/">HOME</router-link>
-                </li>
-                <li>
-                  <router-link to="/first">first</router-link>
-                </li>
-                  <ol>
-                    <li>
-                        <router-link :to="{path: '/users/wos', query: {id: '123'}}">ABS</router-link>
-                    </li>
-                  </ol>
-                <li>
-                  <router-link to='about' append>append</router-link>
-                </li>
-                <li>
-                  <router-link to='/about' exact>exact</router-link>
-                </li>
-              </ul>
-              <router-view></router-view>
-            </div>`
-}).$mount('#app')
+  template: `
+    <div id="app">
+      <h1>This is transition</h1>
+      <ul>
+        <li>
+          <router-link to="/">home</router-link>
+        </li>
+        <li>
+          <router-link to="/parent">parent</router-link>
+        </li>
+      </ul>
+      // mode：动画模式，有两个参数out-in：我先出去你在进来，in-out：我先进来你再出去
+      <transition name="fade" mode="in-out">
+        <router-view></router-view>
+      </transition>
+    </div>
+  `
+}).$mount("#app")
