@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-
+import parent from './transition' // vue组件引入
 Vue.use(VueRouter)
 
 const home = {
@@ -9,20 +9,22 @@ const home = {
       <h2>home</h2>
       <p>This is home</p>
     </div>
-  `
+  `,
+  beforeRouteEnter: (to, from, next) => {
+    console.log("0",to);
+    console.log("0",from);
+    next(); // 可以跳转 路由进入时
+  },
+  beforeRouteLeave: (to, from, next) => {
+    console.log("1",to);
+    console.log("1",from);
+    next(); // 可以跳转 路由离开时
+  }
 }
 
-const parent = {
-  template: `
-    <div>
-      <h2>parent</h2>
-      <p>This is parent</p>
-    </div>
-  `
-}
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'history', // router默认hash路由也就是url上有一个#，可以使用history
   base: __dirname,
   routes: [
     {
@@ -31,13 +33,25 @@ const router = new VueRouter({
     },
     {
       path: '/parent',
-      component: parent
+      component: parent,
+      beforeEnter: (to, from, next) => {
+        console.log(to);
+        console.log(from);
+        next(); // 可以跳转
+        // next(false); // 不可以跳转
+        // next({path: '/'}) // 指定路径
+      }
     }
   ]
 })
 
 new Vue({
   router,
+  data() {
+    return {
+      transition: 'fade'
+    }
+  },
   template: `
     <div id="app">
       <h1>This is transition</h1>
@@ -49,8 +63,7 @@ new Vue({
           <router-link to="/parent">parent</router-link>
         </li>
       </ul>
-      // mode：动画模式，有两个参数out-in：我先出去你在进来，in-out：我先进来你再出去
-      <transition name="fade" mode="in-out">
+      <transition :name="transition" mode="in-out">
         <router-view></router-view>
       </transition>
     </div>

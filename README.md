@@ -706,3 +706,313 @@ import Router from './Router'
       }
     </style>
 ```
+### 动画修改
+src/Router.js
+```
+    import Vue from 'vue'
+    import VueRouter from 'vue-router'
+    
+    Vue.use(VueRouter)
+    
+    const home = {
+      template: `
+        <div>
+          <h2>home</h2>
+          <p>This is home</p>
+        </div>
+      `
+    }
+    
+    const parent = {
+      template: `
+        <div>
+          <h2>parent</h2>
+          <p>This is parent</p>
+        </div>
+      `
+    }
+
+    const router = new VueRouter({
+      mode: 'history',
+      base: __dirname,
+      routes: [
+        {
+          path: '/', 
+          component: home
+        },
+        {
+          path: '/parent',
+          component: parent
+        }
+      ]
+    })
+    
+    new Vue({
+      router,
+      data() {
+        return {
+          transition: 'fade'
+        }
+      },
+      template: `
+        <div id="app">
+          <h1>This is transition</h1>
+          <ul>
+            <li>
+              <router-link to="/">home</router-link>
+            </li>
+            <li>
+              <router-link to="/parent">parent</router-link>
+            </li>
+          </ul>
+          <transition :name="transition" mode="in-out">
+            <router-view></router-view>
+          </transition>
+        </div>
+      `,
+      watch: {
+        '$route' (to, from) {
+          if (from.path == '/parent') {
+            this.transition = 'fade'
+          } else {
+            this.transition = 'fade2'
+          }
+        }
+      }
+    }).$mount("#app")
+```
+main.js
+```
+import Vue from 'vue'
+import Router from './Router'
+```
+入口文件index.html
+```
+    <style>
+      .fade-enter-active, .fade-leave-active {
+        transition: opacity 0.5s;
+      }
+      .fade-enter, .fade-leave-active {
+        opacity: 0;
+      }
+      .fade2-enter-active, .fade2-leave-active {
+        transition: opacity 2s;
+      }
+      .fade2-enter, .fade2-leave-active {
+        opacity: 0;
+      }
+    </style>
+```
+## 404页面
+```
+    import Vue from 'vue'
+    import VueRouter from 'vue-router'
+    
+    Vue.use(VueRouter)
+    
+    const home = {
+      template: `
+        <div>
+          <h2>home</h2>
+          <p>This is home</p>
+        </div>
+      `
+    }
+    
+    const parent = {
+      template: `
+        <div>
+          <h2>parent</h2>
+          <p>This is parent</p>
+        </div>
+      `
+    }
+    
+    const error = {
+      template: `
+        <div>
+          <h2>error</h2>
+          <p>This is error404</p>
+        </div>
+      `
+    }
+    
+    const router = new VueRouter({
+      mode: 'history',
+      base: __dirname,
+      routes: [
+        {
+          path: '/', 
+          component: home
+        },
+        {
+          path: '/parent',
+          component: parent
+        },
+        {
+          path: '*',
+          component: error 404的配置
+        }
+      ]
+    })
+    
+    new Vue({
+      router,
+      data() {
+        return {
+          transition: 'fade'
+        }
+      },
+      template: `
+        <div id="app">
+          <h1>This is transition</h1>
+          <ul>
+            <li>
+              <router-link to="/">home</router-link>
+            </li>
+            <li>
+              <router-link to="/parent">parent</router-link>
+            </li>
+            <li>
+              <router-link to="/paradsent">404页面</router-link>
+            </li>
+          </ul>
+          <transition :name="transition" mode="in-out">
+            <router-view></router-view>
+          </transition>
+        </div>
+      `
+    }).$mount("#app")
+```
+## hash路由和history路由
+[文档](https://router.vuejs.org/zh-cn/essentials/history-mode.html)
+```
+    import Vue from 'vue'
+    import VueRouter from 'vue-router'
+    import parent from './transition' // vue组件引入
+    Vue.use(VueRouter)
+    
+    const home = {
+      template: `
+        <div>
+          <h2>home</h2>
+          <p>This is home</p>
+        </div>
+      `
+    }
+    
+    
+    const router = new VueRouter({
+      mode: 'hash', // router默认hash路由也就是url上有一个#，可以使用history
+      base: __dirname,
+      routes: [
+        {
+          path: '/', 
+          component: home
+        },
+        {
+          path: '/parent',
+          component: parent
+        }
+      ]
+    })
+    
+    new Vue({
+      router,
+      data() {
+        return {
+          transition: 'fade'
+        }
+      },
+      template: `
+        <div id="app">
+          <h1>This is transition</h1>
+          <ul>
+            <li>
+              <router-link to="/">home</router-link>
+            </li>
+            <li>
+              <router-link to="/parent">parent</router-link>
+            </li>
+          </ul>
+          <transition :name="transition" mode="in-out">
+            <router-view></router-view>
+          </transition>
+        </div>
+      `
+    }).$mount("#app")
+```
+## 路由钩子
+```
+    import Vue from 'vue'
+    import VueRouter from 'vue-router'
+    import parent from './transition' // vue组件引入
+    Vue.use(VueRouter)
+    
+    const home = {
+      template: `
+        <div>
+          <h2>home</h2>
+          <p>This is home</p>
+        </div>
+      `,
+      beforeRouteEnter: (to, from, next) => {
+        console.log("0",to);
+        console.log("0",from);
+        next(); // 可以跳转 路由进入时
+      },
+      beforeRouteLeave: (to, from, next) => {
+        console.log("1",to);
+        console.log("1",from);
+        next(); // 可以跳转 路由离开时
+      }
+    }
+    
+    
+    const router = new VueRouter({
+      mode: 'history', // router默认hash路由也就是url上有一个#，可以使用history
+      base: __dirname,
+      routes: [
+        {
+          path: '/', 
+          component: home
+        },
+        {
+          path: '/parent',
+          component: parent,
+          beforeEnter: (to, from, next) => {
+            console.log(to);
+            console.log(from);
+            next(); // 可以跳转
+            // next(false); // 不可以跳转
+            // next({path: '/'}) // 指定路径
+          }
+        }
+      ]
+    })
+    
+    new Vue({
+      router,
+      data() {
+        return {
+          transition: 'fade'
+        }
+      },
+      template: `
+        <div id="app">
+          <h1>This is transition</h1>
+          <ul>
+            <li>
+              <router-link to="/">home</router-link>
+            </li>
+            <li>
+              <router-link to="/parent">parent</router-link>
+            </li>
+          </ul>
+          <transition :name="transition" mode="in-out">
+            <router-view></router-view>
+          </transition>
+        </div>
+      `
+    }).$mount("#app")
+```
