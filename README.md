@@ -1020,7 +1020,7 @@ import Router from './Router'
 ```
 
 ## vuex
-npm install vuex --save
+npm install vuex --save <br />
 src/stroe.js
 ```
     import Vue from 'vue';
