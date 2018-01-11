@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import parent from './transition' // vue组件引入
+import parent from './components/transition' // vue组件引入
 Vue.use(VueRouter)
 
 const home = {
