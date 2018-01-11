@@ -804,6 +804,8 @@ import Router from './Router'
     </style>
 ```
 ## 404页面
+`*`的配置，在早期版本需要放在最后一个，他就像是switch那种遍历到了`*`就不循环下去了。
+3.0.1版本后可以放在任何位置。
 ```
     import Vue from 'vue'
     import VueRouter from 'vue-router'
@@ -851,7 +853,7 @@ import Router from './Router'
         },
         {
           path: '*',
-          component: error 404的配置
+          component: error // 404的配置
         }
       ]
     })
@@ -889,7 +891,7 @@ import Router from './Router'
 ```
     import Vue from 'vue'
     import VueRouter from 'vue-router'
-    import parent from './transition' // vue组件引入
+    import parent from './components/transition' // vue组件引入
     Vue.use(VueRouter)
     
     const home = {
@@ -946,7 +948,7 @@ import Router from './Router'
 ```
     import Vue from 'vue'
     import VueRouter from 'vue-router'
-    import parent from './transition' // vue组件引入
+    import parent from './components/transition' // vue组件引入
     Vue.use(VueRouter)
     
     const home = {
@@ -1015,4 +1017,63 @@ import Router from './Router'
         </div>
       `
     }).$mount("#app")
+```
+
+## vuex
+npm install vuex --save
+src/stroe.js
+```
+    import Vue from 'vue';
+    import Vuex from 'vuex';
+    Vue.use(Vuex);
+    
+    const state = {
+      count: 4
+    }
+    
+    const mutations = {
+      add(state) {
+        state.count ++
+      },
+      del(state) {
+        state.count --
+      }
+    }
+    
+    export default new Vuex.Store({
+      state,
+      mutations
+    })
+```
+src/main.js
+```
+    import Vue from 'vue'
+    // vuex
+    import store from './store'
+    import vuex from './components/vuex'
+    
+    new Vue({
+      el: '#app',
+      store,
+      render: xx => xx(vuex)
+    })
+```
+src/components/vuex.vue
+```
+    <template>
+      <div id="app">
+        <h1>vuex</h1>
+        <p>{{ $store.state.count }}</p>
+        <p>
+          <button @click="$store.commit('add')">add</button>
+          <button @click="$store.commit('del')">del</button>
+        </p>
+      </div>
+    </template>
+    <script>
+      
+    </script>
+    <style>
+    
+    </style>
 ```
