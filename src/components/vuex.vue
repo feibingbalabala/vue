@@ -1,32 +1,38 @@
 <template>
   <div id="app">
     <h1>vuex</h1>
-    <p>{{ $store.state.count }}-{{count}}-{{countA}}</p>
+    <p>state.count:{{ $store.state.count }}</p>
+    <p>count:{{count}}</p>
     <p>
-      <button @click="$store.commit('add')">add</button>
-      <button @click="$store.commit('del')">del</button>
+      <!-- 传递第二参数 -->
+      <button @click="$store.commit('add', 1)">add</button>
+      <button @click="del">del</button>
     </p>
   </div>
 </template>
 <script>
-  import {mapState} from 'vuex'
+  import {mapState, mapMutations, mapGetters} from 'vuex'
   export default {
     name: 'app',
     data() {
-      return {
-        count: 1
-      }
+      return {}
     },
     computed: {
-      countA: function() {
-        return this.$store.state.count + 1;
-      }
-    }
-    // computed: mapState({
-    //   countA: function(state) {
-    //     return state.count + 1
-    //   }
-    // })
+      ...mapState([
+        "count"
+      ]),
+      // count() {
+      //   return this.$store.getters.count
+      // },
+      ...mapGetters([
+        "count"
+      ])
+    },
+    methods: {
+      ...mapMutations([
+      'add',
+      'del'
+    ])}
   }
 </script>
 <style>

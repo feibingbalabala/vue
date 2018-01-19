@@ -1077,7 +1077,9 @@ src/components/vuex.vue
     
     </style>
 ```
-## vuex的state
+## state
+这里需要注意一个点，vuex中的参数命名不能和data()中的相同，否则会出现命名重定义这个问题<br />
+src/components/vuex.vue
 ```
 <template>
   <div id="app">
@@ -1108,6 +1110,207 @@ src/components/vuex.vue
     //     return state.count + 1
     //   }
     // })
+    // computed: mapState([
+    //   "count"
+    // ])
+  }
+</script>
+<style>
+
+</style>
+```
+### state多个参数
+src/stroe.js
+```
+    import Vue from 'vue';
+    import Vuex from 'vuex';
+    Vue.use(Vuex);
+    
+    const state = {
+      count: 4,
+      num: 0
+    }
+    
+    const mutations = {
+      //传递第二参数
+      add(state, n) {
+        state.count ++;
+        state.num = n;
+      },
+      del(state) {
+        state.count --
+      }
+    }
+    
+    export default new Vuex.Store({
+      state,
+      mutations
+    })
+```
+src/components/vuex.vue
+```
+    <template>
+      <div id="app">
+        <h1>vuex</h1>
+        <p>state.count:{{ $store.state.count }}</p>
+        <p>count:{{count}}</p>
+        <p>countA:{{countA}}</p>
+        <p>numA: {{numA}}</p>
+        <p>
+          <!-- 传递第二参数 -->
+          <button @click="$store.commit('add', 1)">add</button>
+          <button @click="$store.commit('del')">del</button>
+        </p>
+      </div>
+    </template>
+    <script>
+      import {mapState} from 'vuex'
+      export default {
+        name: 'app',
+        data() {
+          return {
+            count: 1
+          }
+        },
+        computed: {
+          countA: function() {
+            return this.$store.state.count + 1;
+          },
+          numA: function() {
+            return this.$store.state.num;
+          }
+        },
+        // computed: mapState({
+        //   countA: function(state) {
+        //     return state.count + 1
+        //   }
+        // })
+        // computed: mapState([
+        //   "count"
+        // 如果需要这么去使用的话，注意data()是否有相同的参数。
+        // ])
+      }
+    </script>
+    <style>
+    
+    </style>
+```
+## mutations
+mapMutations可以将vuex中的mutations方法取出来。<br />
+src/components/vuex.vue
+```
+    <template>
+      <div id="app">
+        <h1>vuex</h1>
+        <p>state.count:{{ $store.state.count }}</p>
+        <p>count:{{count}}</p>
+        <p>countA:{{countA}}</p>
+        <p>numA: {{numA}}</p>
+        <p>
+          <!-- 传递第二参数 -->
+          <button @click="$store.commit('add', 1)">add</button>
+          <button @click="del">del</button>
+        </p>
+      </div>
+    </template>
+    <script>
+      import {mapState, mapMutations} from 'vuex'
+      export default {
+        name: 'app',
+        data() {
+          return {
+            count: 1
+          }
+        },
+        computed: {
+          countA: function() {
+            return this.$store.state.count + 1;
+          },
+          numA: function() {
+            return this.$store.state.num;
+          }
+        },
+        methods: mapMutations([
+          'add',
+          'del'
+        ])
+      }
+    </script>
+    <style>
+    
+    </style>
+```
+## getter
+es6中箭头函数的this指向的是上一层，并不是本层，（在conputed可能发生事件穿透。）<br />
+src/stroe.js
+```
+    import Vue from 'vue';
+    import Vuex from 'vuex';
+    Vue.use(Vuex);
+    
+    const state = {
+      count: 4,
+      num: 0
+    }
+    
+    const mutations = {
+      add(state) {
+        state.count ++;
+      },
+      del(state) {
+        state.count --
+      }
+    }
+    
+    const getters = {
+      count: function(state) {
+        return state.count += 100
+      }
+    }
+    
+    export default new Vuex.Store({
+      state,
+      mutations,
+      getters
+    })
+```
+src/components/vuex.vue
+```
+<template>
+  <div id="app">
+    <h1>vuex</h1>
+    <p>state.count:{{ $store.state.count }}</p>
+    <p>count:{{count}}</p>
+    <p>
+      <!-- 传递第二参数 -->
+      <button @click="$store.commit('add', 1)">add</button>
+      <button @click="del">del</button>
+    </p>
+  </div>
+</template>
+<script>
+  import {mapState, mapMutations, mapGetters} from 'vuex'
+  export default {
+    name: 'app',
+    data() {
+      return {}
+    },
+    computed: {
+      ...mapState([
+        "count"
+      ]),
+      // count() {
+      //   return this.$store.getters.count
+      // },
+      ...mapGetters([
+        "count"
+      ])
+    },
+    methods: {
+      ...mapMutations([
+      'add',
+      'del'
+    ])}
   }
 </script>
 <style>

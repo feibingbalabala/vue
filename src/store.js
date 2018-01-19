@@ -3,19 +3,29 @@ import Vuex from 'vuex';
 Vue.use(Vuex);
 
 const state = {
-  count: 4
+  count: 4,
+  num: 0
 }
 
 const mutations = {
-  add(state) {
-    state.count ++
+  //传递第二参数
+  add(state, n) {
+    state.count ++;
+    state.num = n;
   },
   del(state) {
     state.count --
   }
 }
 
+const getters = {
+  count: function(state) {
+    return state.count += 100
+  }
+}
+
 export default new Vuex.Store({
   state,
-  mutations
+  mutations,
+  getters
 })
