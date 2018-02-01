@@ -20,12 +20,27 @@ const mutations = {
 
 const getters = {
   count: function(state) {
-    return state.count += 100
+    return state.count += 10
+  }
+}
+
+const actions = {
+  // 这个context代表整个state
+  addplus (context) {
+    context.commit('add', {a: 1});
+    setTimeout(() => {
+      context.commit('del')
+    }, 300);
+    console.log('first do')
+  },
+  delplus ({commit}) {
+    commit('del')
   }
 }
 
 export default new Vuex.Store({
   state,
   mutations,
-  getters
+  getters,
+  actions
 })
