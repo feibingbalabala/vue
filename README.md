@@ -1078,6 +1078,7 @@ src/components/vuex.vue
     </style>
 ```
 ## state
+静态数据的命名<br/>
 这里需要注意一个点，vuex中的参数命名不能和data()中的相同，否则会出现命名重定义这个问题<br />
 src/components/vuex.vue
 ```
@@ -1196,6 +1197,7 @@ src/components/vuex.vue
     </style>
 ```
 ## mutations
+修改state的状态，必须通过commit来触发改变。<br />
 mapMutations可以将vuex中的mutations方法取出来。<br />
 src/components/vuex.vue
 ```
@@ -1241,6 +1243,8 @@ src/components/vuex.vue
     </style>
 ```
 ## getter
+就是一个计算属性，就是多个状态改变，这个getter也会改变。<br/>
+computed: 不推荐使用尖头函数<br/>
 es6中箭头函数的this指向的是上一层，并不是本层，（在conputed可能发生事件穿透。）<br />
 src/stroe.js
 ```
@@ -1316,4 +1320,116 @@ src/components/vuex.vue
 <style>
 
 </style>
+```
+## Action
+
+action是一个异步状态的更新（例如执行ajax），mutation是同步状态的更新。<br />
+src/stroe.js
+```
+    import Vue from 'vue';
+    import Vuex from 'vuex';
+    Vue.use(Vuex);
+    
+    const state = {
+      count: 4,
+      num: 0
+    }
+    
+    const mutations = {
+      //传递第二参数
+      add(state, n) {
+        state.count ++;
+        state.num = n;
+      },
+      del(state) {
+        state.count --
+      }
+    }
+    
+    const getters = {
+      count: function(state) {
+        return state.count += 10
+      }
+    }
+    
+    const actions = {
+      // 这个context代表整个state
+      addplus (context) {
+        context.commit('add', {a: 1});
+        setTimeout(() => {
+          context.commit('del')
+        }, 300);
+        console.log('first do')
+      },
+      delplus ({commit}) {
+        commit('del')
+      }
+    }
+    
+    export default new Vuex.Store({
+      state,
+      mutations,
+      getters,
+      actions
+    })
+```
+src/components/vuex.vue
+```
+<template>
+  <div id="app">
+    <h1>vuex</h1>
+    <p>state.count:{{ $store.state.count }}</p>
+    <p>count:{{count}}</p>
+    <p>
+      <!-- 传递第二参数 -->
+      <button @click="$store.commit('add', 1)">add</button>
+      <button @click="del">del</button>
+    </p>
+    <h2>action</h2>
+    <p>
+      <button @click="addplus">addplus</button>
+      <button @click="delplus">delplus</button>
+    </p>
+  </div>
+</template>
+<script>
+  import {mapState, mapMutations, mapGetters, mapActions} from 'vuex'
+  export default {
+    name: 'app',
+    data() {
+      return {}
+    },
+    computed: {
+      ...mapState([
+        "count"
+      ]),
+      // count() {
+      //   return this.$store.getters.count
+      // },
+      // ...mapGetters([
+      //   "count"
+      // ])
+    },
+    methods: {
+      ...mapMutations([
+        'add',
+        'del'
+      ]),
+      // action方法1
+      // ...mapActions([
+      //   'addplus',
+      //   'delplus'
+      // ]),
+      // action方法2
+      ...mapActions({
+        addplus: 'addplus',
+        delplus: 'delplus'
+      }),
+    }
+  }
+</script>
+<style>
+
+</style>
+
 ```
