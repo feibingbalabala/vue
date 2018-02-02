@@ -1433,3 +1433,45 @@ src/components/vuex.vue
 </style>
 
 ```
+## vue的生存周期
+```
+初始化代码
+  beforeCreate: function() {
+    console.log('1-beforeCreate 初始化之后')
+  },
+  创建完成，只是在虚拟环境中创建完成，不能获取实际的DOM结构。
+  created: function() {
+    console.log('2-created 创建完成')
+  },
+  挂在完成，虚拟DOM已经完成实际DOM的创建，还未显示。
+  beforeMount: function() {
+    console.log('3-beforeMount 挂载之前')
+  },
+  在终端实际DOM创建成功，并显示出来。
+  mounted: function() {
+    console.log('4-mounted 被创建')
+  },
+  当页面的数据发生变化之前，watch参数在之前触发。
+  beforeUpdate: function() {
+    console.log('5-beforeUpdate 数据更新前')
+  },
+  当页面的数据发生变化之后。
+  updated: function() {
+    console.log('6-updated 数据更新后')
+  },
+  在<keep-alive></keep-alive>激活activated和deactivated，将组件保存在内存之中，不去销毁。
+  activated: function() {
+    console.log('7-activated')
+  },
+  deactivated: function() {
+    console.log('8-deactivated')
+  },
+  组件销毁之前发生在路由跳转的时候，包裹在数据beforeUpdate和updated之中
+  beforeDestroy: function() {
+    console.log('9-beforeDestory 销毁之前')
+  },
+  组件销毁之后，包裹在数据beforeUpdate和updated之中
+  destroyed: function() {
+    console.log('10-destroyed 销毁之后')
+  }
+```
