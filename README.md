@@ -1475,3 +1475,68 @@ src/components/vuex.vue
     console.log('10-destroyed 销毁之后')
   }
 ```
+## 简易实现SSR(服务端渲染)
+可以参考尤雨西的vue-ssr-demo，这个不能在windows系统上操作。<br />
+在文件根目录新建server.js文件，需要提前下载vue-server-renderer(npm install)
+```
+    'use strict'
+    
+    var fs = require('fs')
+    var path = require('path')
+    global.Vue = require('vue')
+    
+    // 获取HTML
+    var layout = fs.readFileSync('./index.html', 'utf8')
+    // 服务端渲染模块渲染上面的./index.html
+    var renderer = require('vue-server-renderer').createRenderer()
+    
+    var express = require('express')
+    var server = express()
+    
+    server.use('/src', express.static(
+      path.resolve(__dirname, 'src')
+    ))
+    
+    // node get
+    server.get('*', function (request, response) {
+      renderer.renderToString(
+        require('./src/mainserver')(),
+        function (error, html) {
+          if (error) {
+            console.log(error)
+            return response
+              .status(500)
+              .send('server error')
+          }
+          // send this layout with the rendered app is html
+          response.send(layout.replace('<div id="app"></div>', html))
+        }
+      )
+    })
+    
+    // 端口号8812
+    server.listen(8812, function (error) {
+      if (error) throw error
+      console.log("请访问: localhost:8812")
+    })
+```
+在src根目录新建mainserver.js
+```
+    (function () {'use strict'
+      var createApp = function() {
+        return new Vue({
+          template: '<div id="app">hello vue, {{text}}</div>',
+          data() {
+            return {
+              'text': 'hello world'
+            }
+          },
+        })
+      }
+      if (typeof module !== 'undefined' && module.exports) {
+        module.exports = createApp
+      } else {
+        this.app = createApp()
+      }
+    }).call(this)
+```
